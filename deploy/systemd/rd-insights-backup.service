@@ -1,0 +1,10 @@
+[Unit]
+Description=RD Insights PostgreSQL backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/rd-insights-backup.env
+ExecStart=/opt/rd-insights/src/scripts/backup-postgres.sh
+UMask=0077

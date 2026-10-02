@@ -1,0 +1,1 @@
+ALTER TABLE "Lead" ADD COLUMN "webhookProfileVersion" INTEGER NOT NULL DEFAULT 0;

@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily RD Insights PostgreSQL backup
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 UTC
+Persistent=true
+Unit=rd-insights-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,25 @@
+.steps { display: grid; gap: 14px; max-width: 640px; }
+.step { display: flex; gap: 12px; align-items: flex-start; }
+.stepCard { flex: 1; min-width: 0; strong { display: block; margin-bottom: 6px; } p { margin-bottom: 10px; font-size: 14px; } }
+.n {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-hover-surface);
+  border: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  flex: none;
+  margin-top: 14px;
+}
+.done .n { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+
+.phases { list-style: none; padding: 0; display: grid; gap: .5rem;
+  li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; padding: .5rem; border-left: 3px solid #cbd5e1; }
+  li[data-state='current'] { border-color: #2563eb; }
+  li[data-state='done'] { border-color: #16a34a; }
+  li[data-state='failed'] { border-color: #dc2626; }
+}

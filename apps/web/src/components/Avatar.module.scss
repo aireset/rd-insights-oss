@@ -1,0 +1,12 @@
+.iniciais {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: 50%;
+  background: var(--c-primary-soft);
+  color: var(--c-primary-strong);
+  font-weight: 600;
+  line-height: 1;
+  user-select: none;
+}

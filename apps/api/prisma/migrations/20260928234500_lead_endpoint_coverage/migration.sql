@@ -1,0 +1,1 @@
+ALTER TABLE "Lead" ADD COLUMN "dataCoverage" JSONB NOT NULL DEFAULT '{}';

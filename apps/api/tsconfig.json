@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS", "moduleResolution": "Node", "target": "ES2021",
+    "outDir": "./dist", "rootDir": "./src", "baseUrl": "./", "types": ["node"],
+    "experimentalDecorators": true, "emitDecoratorMetadata": true, "useDefineForClassFields": false,
+    "verbatimModuleSyntax": false, "isolatedModules": false, "noUncheckedIndexedAccess": false, "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
+}

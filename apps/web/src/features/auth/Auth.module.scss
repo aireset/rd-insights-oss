@@ -1,0 +1,54 @@
+// Tela de entrada/registro — layout centralizado (marca em cima, card centralizado).
+.wrap {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 20px;
+  background: var(--c-bg);
+}
+
+.inner { width: 100%; max-width: 460px; display: flex; flex-direction: column; }
+
+.logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 18px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  background: var(--c-brand);
+  color: #fff;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--c-brand) 22%, transparent);
+}
+
+.nome { text-align: center; font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+.sub { font-size: 14px; color: var(--c-text-muted); margin: 2px 0 24px; text-align: center; }
+
+.card {
+  width: 100%;
+  background: var(--c-card);
+  border-radius: var(--radius-card);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--c-border);
+
+  h1 { font-size: 18px; margin-bottom: 16px; }
+}
+
+.foot { margin-top: 16px; text-align: center; font-size: 14px; color: var(--c-text-muted); a { font-weight: 600; } }
+.linkButton { border: 0; padding: 0; background: none; color: var(--c-brand); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.muted { color: var(--c-text-muted); margin-bottom: 12px; }
+.success {
+  background: #e8f5ee;
+  color: #176b3a;
+  border-radius: var(--radius-input);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}

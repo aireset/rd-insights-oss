@@ -1,0 +1,82 @@
+@use '../styles/tokens' as t;
+
+.field { margin-bottom: 14px; }
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 6px;
+}
+
+.control {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: var(--radius-input);
+  border: 2px solid var(--c-border);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--c-text);
+  background: var(--c-card);
+  min-height: 44px;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+
+  @media (max-width: 767px) { font-size: 16px; } // iOS: < 16px dá zoom ao focar
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px var(--c-ring);
+  }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+.error { font-size: 12px; color: var(--c-destructive); margin-top: 4px; }
+.hint { font-size: 12px; color: var(--c-text-muted); margin-top: 4px; }
+
+%action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: var(--radius-input);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+  transition: background 150ms ease-out, opacity 150ms ease-out;
+  @include t.focus-ring;
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.save {
+  @extend %action;
+  border: none;
+  background: var(--c-primary);
+  color: var(--c-card);
+  &:hover:not(:disabled) { background: var(--c-primary-strong); }
+}
+
+.cancel {
+  @extend %action;
+  border: 1px solid var(--c-border);
+  background: var(--c-card);
+  color: var(--c-text);
+  &:hover:not(:disabled) { background: var(--c-hover-surface); }
+}
+
+.full { width: 100%; }
+
+.alert {
+  background: #FDECEC;
+  color: var(--c-destructive-text);
+  border-radius: var(--radius-input);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}

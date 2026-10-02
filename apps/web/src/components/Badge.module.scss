@@ -1,0 +1,22 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.success { background: var(--c-primary-soft); color: var(--c-primary); .dot { background: var(--c-accent); } }
+.warning { background: #FEF3C7; color: #92400E; .dot { background: var(--c-warning); } }
+.danger { background: #FDECEC; color: var(--c-destructive-text); .dot { background: var(--c-destructive); } }
+.info { background: #E8EDF8; color: var(--c-info); .dot { background: var(--c-info); } }
+.neutral { background: var(--c-btn-secondary); color: var(--c-text-muted); .dot { background: var(--c-border); } }

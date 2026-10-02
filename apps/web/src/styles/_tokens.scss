@@ -1,0 +1,63 @@
+// Design tokens — tema da aplicação (tema claro, Montserrat).
+// A cor da marca vive em UM lugar: `$c-brand`. Primary/strong/soft/ring derivam dela.
+
+// ─── Layout ────────────────────────────────────────────────────────────────
+$max-width: 430px;   // coluna mobile
+$bp-md: 768px;       // mobile-first: base = mobile, min-width = desktop
+$sidebar-w: 240px;
+$content-max-ultrawide: 2400px;
+
+// ─── Cores ─────────────────────────────────────────────────────────────────
+$c-brand: #00652E; // cor de marca — trocar aqui
+$c-accent: #F5821F;
+$c-bg: #F6F8F7;
+$c-card: #FFFFFF;
+$c-text: #18211C;
+$c-text-muted: #5C6B62;
+$c-border: #E1E8E3;
+$c-destructive: #B01116;
+$c-warning: #D97706;
+$c-info: #23408F;
+
+:root {
+  // --c-brand = cor crua da marca (logos, faixas, decoração).
+  // --c-primary = a cor usada em TEXTO/botões: precisa ser legível sobre branco.
+  // Se a marca for clara, troque só --c-primary por um tom mais escuro.
+  --c-brand: #{$c-brand}; // cor de marca — trocar aqui
+  --c-primary: var(--c-brand);
+  --c-primary-strong: color-mix(in srgb, var(--c-primary) 78%, black);
+  --c-primary-soft: color-mix(in srgb, var(--c-primary) 10%, white);
+  --c-ring: color-mix(in srgb, var(--c-primary) 35%, transparent);
+  --c-accent: #{$c-accent};
+  --c-bg: #{$c-bg};
+  --c-card: #{$c-card};
+  --c-text: #{$c-text};
+  --c-text-muted: #{$c-text-muted};
+  --c-border: #{$c-border};
+  --c-destructive: #{$c-destructive};
+  --c-warning: #{$c-warning};
+  --c-info: #{$c-info};
+
+  --c-hover-surface: #F0F4F1;
+  --c-btn-secondary: #F1F4F2;
+  --c-btn-secondary-hover: #E8EDE9;
+  --c-destructive-text: #991B1B;
+
+  --header-h: 63px;
+  --max-width: #{$max-width};
+
+  --shadow-sm: 0 1px 2px rgba(16, 24, 20, 0.06);
+  --shadow-md: 0 2px 8px rgba(16, 24, 20, 0.08);
+  --shadow-lg: 0 8px 24px rgba(16, 24, 20, 0.12);
+
+  --radius-input: 8px;
+  --radius-card: 12px;
+  --radius-pill: 999px;
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--c-ring);
+  }
+}

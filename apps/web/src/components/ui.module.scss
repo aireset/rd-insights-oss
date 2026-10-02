@@ -1,0 +1,173 @@
+@use '../styles/tokens' as t;
+
+// Peças de tela compartilhadas: título, botões, barra de filtros, "ilhas" (card por registro), paginação.
+
+.page { min-width: 0; }
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.titleCount { font-size: 14px; font-weight: 600; color: var(--c-text-muted); }
+
+.muted { color: var(--c-text-muted); }
+.mono { font-family: ui-monospace, 'JetBrains Mono', monospace; font-size: 12.5px; }
+
+.btnPrimary, .btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-input);
+  font-weight: 600;
+  font-size: 14px;
+  min-height: 44px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease-out;
+  @include t.focus-ring;
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+.btnPrimary {
+  border: none;
+  background: var(--c-primary);
+  color: var(--c-card);
+  &:hover:not(:disabled) { background: var(--c-primary-strong); }
+}
+.btnSecondary {
+  border: 1px solid var(--c-border);
+  background: var(--c-card);
+  color: var(--c-text);
+  &:hover:not(:disabled) { background: var(--c-hover-surface); }
+}
+
+.alert {
+  background: #FDECEC;
+  color: var(--c-destructive-text);
+  border-radius: var(--radius-input);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+// ─── Barra de busca + filtros ───────────────────────────────────────────────
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.busca { flex: 1 1 260px; min-width: 0; }
+
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px 16px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: var(--c-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+}
+.filtroCampo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.filtroRotulo {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+.toggle { position: relative; }
+.toggleBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--c-primary);
+  color: var(--c-card);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+// ─── Lista em cards por registro ("ilhas") ──────────────────────────────────
+.ordem { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 0 8px; font-size: 13px; color: var(--c-text-muted); }
+.ordemBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  background: var(--c-card);
+  color: var(--c-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { background: var(--c-hover-surface); }
+  &[aria-pressed='true'] { border-color: var(--c-primary); background: var(--c-primary-soft); color: var(--c-primary-strong); }
+}
+
+.lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+.linha {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 14px;
+  text-align: left;
+  color: var(--c-text);
+  background: var(--c-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: background 150ms ease-out, border-color 150ms ease-out;
+  &:hover { background: var(--c-primary-soft); border-color: var(--c-primary); }
+  @include t.focus-ring;
+}
+.linhaTitulo { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+.linhaNome { font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.linhaSub { font-size: 13px; color: var(--c-text-muted); overflow-wrap: anywhere; }
+.linhaMeta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px 20px;
+  flex: 2 1 360px;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+.metaItem { display: flex; flex-direction: column; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
+.metaLabel { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c-text-muted); white-space: nowrap; }
+.tags { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 4px; }
+.tag {
+  display: inline-block;
+  padding: 1px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--c-hover-surface);
+  border: 1px solid var(--c-border);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-text);
+}
+.vazio { padding: 28px 14px; text-align: center; color: var(--c-text-muted); background: var(--c-card); border: 1px dashed var(--c-border); border-radius: var(--radius-card); }
+
+.pager { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; font-size: 13px; color: var(--c-text-muted); }
+.pagBtns { display: inline-flex; gap: 6px; }
+
+// ─── Card genérico (ficha, passos) ──────────────────────────────────────────
+.card {
+  background: var(--c-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+}

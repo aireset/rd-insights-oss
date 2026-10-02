@@ -1,0 +1,20 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  background: var(--c-hover-surface);
+  color: var(--c-text);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  margin: 0 8px 12px 0;
+
+  button {
+    display: inline-flex;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    padding: 0;
+  }
+}

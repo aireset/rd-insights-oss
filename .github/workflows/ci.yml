@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Nome estável: é o check exigido na proteção da main.
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: rd
+          POSTGRES_PASSWORD: rd
+          POSTGRES_DB: rd_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rd -d rd_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://rd:rd@localhost:5432/rd_test
+      TEST_DATABASE_URL: postgresql://rd:rd@localhost:5432/rd_test
+      DATABASE_TEST_URL: postgresql://rd:rd@localhost:5432/rd_test
+      REDIS_TEST_URL: redis://localhost:6379/15
+      JWT_ACCESS_SECRET: ci-validation-secret-at-least-16
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.22.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm --filter @rd/shared build
+      - run: corepack pnpm --filter @rd/api exec prisma generate
+      # Banco limpo do serviço: prova que o histórico de migrations aplica do zero.
+      - run: corepack pnpm --filter @rd/api prisma:migrate
+      - run: corepack pnpm -r typecheck
+      - run: corepack pnpm lint
+      - run: corepack pnpm test
+      - run: corepack pnpm --filter @rd/api test:boot
+      - run: corepack pnpm --filter @rd/web build

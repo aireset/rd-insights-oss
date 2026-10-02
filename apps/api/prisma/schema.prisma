@@ -1,0 +1,455 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  viewer
+}
+
+enum RdConnectionStatus {
+  pending
+  authorized
+  active
+  reauth_required
+  error
+}
+
+enum LeadEventType {
+  CONVERSION
+  OPPORTUNITY
+}
+
+enum RdMembershipCoverage {
+  unknown
+  partial
+  complete
+}
+
+enum SyncKind {
+  full
+  delta
+  refresh
+  catalog
+  webhook
+  analytics
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  users     User[]
+  twoFactorFactors UserTwoFactor[]
+  invitations InviteToken[]
+  rd        RdConnection?
+  leads     Lead[]
+  syncRuns  SyncRun[]
+  segmentations RdSegmentation[]
+  webhookLogs WebhookLog[]
+  aiConfig  AiConfig?
+  aiLogs    AiLog[]
+  aiClassificationPolicy AiClassificationPolicy?
+  aiClassificationTasks AiClassificationTask[]
+  aiClassificationAttempts AiClassificationAttempt[]
+  savedViews SavedView[]
+  rdAnalytics RdAnalyticsCache[]
+  dailyInsightSnapshots DailyInsightSnapshot[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  accountId    String
+  account      Account  @relation(fields: [accountId], references: [id])
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(admin)
+  isSuperAdmin Boolean  @default(false)
+  passwordResetRequestedAt DateTime?
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+  refreshTokens RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  createdInvites InviteToken[] @relation("InviteCreator")
+  savedViews SavedView[]
+  twoFactor UserTwoFactor?
+
+  @@index([accountId])
+  @@unique([id, accountId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model UserTwoFactor {
+  id            String   @id @default(uuid())
+  accountId     String
+  userId        String
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId, accountId], references: [id, accountId], onDelete: Cascade)
+  secret        String   // AES-256-GCM, via encryptSecret
+  enabledAt     DateTime?
+  lastUsedStep  BigInt?
+  createdAt     DateTime @default(now())
+  recoveryCodes UserTwoFactorRecoveryCode[]
+
+  @@unique([userId, accountId])
+  @@index([accountId])
+}
+
+model UserTwoFactorRecoveryCode {
+  id        String   @id @default(uuid())
+  accountId String
+  userId    String
+  codeHash  String
+  createdAt DateTime @default(now())
+  factor    UserTwoFactor @relation(fields: [userId, accountId], references: [userId, accountId], onDelete: Cascade)
+
+  @@unique([accountId, userId, codeHash])
+  @@index([accountId, userId])
+}
+
+model InviteToken {
+  id          String   @id @default(uuid())
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  email       String   @unique
+  role        UserRole
+  tokenHash   String   @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdById String
+  createdBy   User     @relation("InviteCreator", fields: [createdById, accountId], references: [id, accountId])
+  createdAt   DateTime @default(now())
+
+  @@index([accountId, usedAt, expiresAt])
+}
+
+model RdConnection {
+  id               String             @id @default(uuid())
+  accountId        String             @unique
+  account          Account            @relation(fields: [accountId], references: [id])
+  clientId         String
+  clientSecret     String             // cifrado (enc:v1:…)
+  accessToken      String?            // cifrado
+  refreshToken     String?            // cifrado
+  expiresAt        DateTime?
+  segmentationId   String?
+  segmentationName String?
+  webhookUuids     String[]           @default([])
+  webhookTokenHash String?
+  webhookRegisteredAt DateTime?
+  webhookError String?
+  status           RdConnectionStatus @default(pending)
+  lastError        String?
+  lastFullSyncAt   DateTime?
+  lastDeltaSyncAt  DateTime?
+  lastRefreshAt    DateTime?
+  refreshDailyBudget Int              @default(1000)
+  refreshBudgetDay DateTime?
+  refreshRequestsUsed Int             @default(0)
+  catalogAttemptAt DateTime?
+  catalogSyncedAt  DateTime?
+  catalogError     String?
+  catalogBudgetDay DateTime?
+  catalogRequestsUsed Int             @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model Lead {
+  id                String    @id @default(uuid())
+  accountId         String
+  account           Account   @relation(fields: [accountId], references: [id])
+  rdUuid            String
+  name              String?
+  email             String?
+  phone             String?
+  city              String?
+  state             String?
+  country           String?
+  jobTitle          String?
+  company           String?
+  website           String?
+  tags              String[]  @default([])
+  lifecycleStage    String?
+  opportunity       Boolean   @default(false)
+  fit               String?
+  interest          Int?
+  conversionsCount  Int       @default(0)
+  firstConversionAt DateTime?
+  lastConversionAt  DateTime?
+  rdCreatedAt       DateTime?
+  customFields      Json      @default("{}")
+  dataCoverage      Json      @default("{}")
+  raw               Json?
+  aiSummary         String?
+  aiScore           String?
+  aiReason          String?
+  aiAt              DateTime?
+  aiCheckedAt       DateTime?
+  aiModel           String?
+  aiInputHash       String?
+  classificationTasks AiClassificationTask[]
+  syncedAt          DateTime  @default(now())
+  enrichedAt        DateTime?
+  historySyncedAt   DateTime?
+  webhookProfileAt  DateTime?
+  webhookProfileVersion Int @default(0)
+  events            LeadEvent[]
+  segmentMemberships LeadSegmentMembership[]
+
+  @@unique([accountId, rdUuid])
+  @@unique([accountId, id])
+  @@index([accountId, lastConversionAt])
+  @@index([accountId, lifecycleStage])
+  @@index([accountId, email])
+}
+
+model RdSegmentation {
+  id              String               @id @default(uuid())
+  accountId       String
+  account         Account              @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  rdId            String
+  name            String
+  standard        Boolean              @default(false)
+  selected        Boolean              @default(false)
+  available       Boolean              @default(true)
+  coverage        RdMembershipCoverage @default(unknown)
+  lastScanAt      DateTime?
+  lastDeltaSyncAt DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  memberships     LeadSegmentMembership[]
+
+  @@unique([accountId, rdId])
+  @@index([accountId, selected])
+  @@index([accountId, available])
+}
+
+model LeadSegmentMembership {
+  accountId        String
+  segmentationRdId String
+  leadRdUuid       String
+  firstSeenAt      DateTime @default(now())
+  lastSeenAt       DateTime @default(now())
+  lastSeenRunId    String?
+  lastMissingRunId String?
+  missingScans     Int @default(0)
+  eventsPending    Boolean @default(false)
+  segmentation    RdSegmentation @relation(fields: [accountId, segmentationRdId], references: [accountId, rdId], onDelete: Cascade)
+  lead            Lead @relation(fields: [accountId, leadRdUuid], references: [accountId, rdUuid], onDelete: Cascade)
+
+  @@id([accountId, segmentationRdId, leadRdUuid])
+  @@index([accountId, leadRdUuid])
+}
+
+model LeadEvent {
+  ingestedAt DateTime @default(now())
+  id         String        @id @default(uuid())
+  accountId  String
+  leadId     String
+  lead       Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type       LeadEventType
+  identifier String
+  occurredAt DateTime
+  payload    Json          @default("{}")
+
+  @@unique([leadId, type, identifier, occurredAt])
+  @@index([accountId, occurredAt])
+  @@index([accountId, identifier])
+  @@index([accountId, leadId, ingestedAt])
+}
+
+model SyncRun {
+  id         String    @id @default(uuid())
+  accountId  String
+  account    Account   @relation(fields: [accountId], references: [id])
+  kind       SyncKind
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  cursor     Int       @default(0)
+  segmentId  String?
+  status     String    @default("queued")
+  stats      Json      @default("{}")
+  error      String?
+
+  @@index([accountId, startedAt])
+  @@index([accountId, segmentId, startedAt])
+}
+
+model WebhookLog {
+  id String @id @default(uuid())
+  accountId String
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  eventKey String
+  eventType String
+  rdUuid String
+  payload Json
+  status String @default("pending")
+  attempts Int @default(0)
+  receivedAt DateTime @default(now())
+  processedAt DateTime?
+  lastError String?
+
+  @@unique([accountId, eventKey])
+  @@index([status, receivedAt])
+  @@index([accountId, receivedAt])
+}
+
+model SavedView {
+  id        String   @id @default(uuid())
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  filters   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([accountId, userId, updatedAt])
+}
+
+model AiClassificationPolicy {
+  accountId String @id
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  inputPriceMicros BigInt
+  outputPriceMicros BigInt
+  cooldownUntil DateTime?
+  updatedAt DateTime @updatedAt
+}
+
+model AiClassificationTask {
+  id String @id @default(uuid())
+  accountId String
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  leadId String
+  lead Lead @relation(fields: [accountId, leadId], references: [accountId, id], onDelete: Cascade)
+  inputHash String
+  source String
+  status String @default("pending")
+  error String?
+  nextAttemptAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  attempts AiClassificationAttempt[]
+
+  @@unique([accountId, leadId, inputHash])
+  @@unique([accountId, id])
+  @@index([status, nextAttemptAt])
+}
+
+model AiClassificationAttempt {
+  id String @id @default(uuid())
+  accountId String
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  taskId String
+  task AiClassificationTask @relation(fields: [accountId, taskId], references: [accountId, id], onDelete: Cascade)
+  reservedMicros BigInt
+  chargedMicros BigInt
+  costSource String @default("reserved")
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+
+  @@index([accountId, createdAt])
+}
+
+model AiConfig {
+  id String @id @default(uuid())
+  accountId String @unique
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  provider String @default("openai-compatible")
+  baseUrl String @default("https://api.openai.com/v1")
+  model String
+  apiKey String
+  enabled Boolean @default(false)
+  monthlyBudgetCents Int @default(1000)
+  requestsPerMinute Int @default(10)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([accountId, enabled])
+}
+
+model AiLog {
+  id String @id @default(uuid())
+  accountId String
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  feature String
+  provider String
+  model String
+  inputTokens Int?
+  outputTokens Int?
+  costMicros BigInt?
+  createdAt DateTime @default(now())
+
+  @@index([accountId, createdAt])
+  @@index([accountId, feature, createdAt])
+}
+
+model RdAnalyticsCache {
+  id        String   @id @default(uuid())
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  type      String
+  period    Int
+  data      Json?
+  fetchedAt DateTime?
+  error     String?
+  updatedAt DateTime @updatedAt
+
+  @@unique([accountId, type, period])
+  @@index([accountId, fetchedAt])
+}
+
+model DailyInsightSnapshot {
+  id String @id @default(uuid())
+  accountId String
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  snapshotDate DateTime @db.Date
+  scopeKey String
+  scope Json
+  timezone String
+  contextText String
+  filters Json
+  metrics Json
+  comparison Json
+  coverage Json
+  freshness Json
+  bullets Json?
+  model String?
+  error String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([accountId, snapshotDate, scopeKey])
+  @@index([accountId, snapshotDate])
+}

@@ -1,0 +1,80 @@
+@use './tokens';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  background: var(--c-bg);
+  color: var(--c-text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea { font: inherit; }
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--c-text);
+}
+
+table, .tabular-nums { font-variant-numeric: tabular-nums; }
+
+a {
+  color: var(--c-primary);
+  text-decoration: none;
+  &:hover { color: var(--c-primary-strong); }
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--c-ring);
+}
+
+// Coluna centralizada no mobile; no desktop o layout cuida do grid.
+#root {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: tokens.$bp-md) {
+  #root {
+    max-width: none;
+    padding-bottom: 0;
+  }
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--c-border);
+  border-radius: var(--radius-pill);
+  &:hover { background: var(--c-text-muted); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

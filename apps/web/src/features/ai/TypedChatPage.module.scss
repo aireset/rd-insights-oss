@@ -1,0 +1,7 @@
+.transcript { display: grid; gap: 12px; margin-bottom: 16px; }
+.bubble { max-width: 85%; padding: 10px 14px; border-radius: 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.user { justify-self: end; background: var(--c-primary-soft); }
+.assistant { justify-self: start; background: var(--c-hover-surface); }
+.scope { margin-bottom: 12px; font-size: 13px; }
+.composer { display: flex; gap: 8px; }
+@media (max-width: 560px) { .composer { flex-direction: column; } .bubble { max-width: 100%; } }

@@ -1,0 +1,17 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.env
+.env.*
+.worktrees
+*.log
+*.dump
+*.backup
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+backups

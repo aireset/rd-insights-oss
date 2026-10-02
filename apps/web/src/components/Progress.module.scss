@@ -1,0 +1,9 @@
+.bar { height: 8px; background: var(--c-hover-surface); border-radius: var(--radius-pill); overflow: hidden; }
+.fill { height: 100%; background: var(--c-primary); transition: width 0.3s; }
+.indeterminate {
+  width: 100%;
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.3) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 75%);
+  background-size: 24px 24px;
+  animation: listras 0.9s linear infinite;
+}
+@keyframes listras { to { background-position: 24px 0; } }

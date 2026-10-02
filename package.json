@@ -1,0 +1,25 @@
+{
+  "name": "rd-insights",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "packageManager": "pnpm@10.22.0",
+  "scripts": {
+    "dev": "pnpm --filter @rd/shared build && pnpm --parallel --filter @rd/api --filter @rd/web dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "db:up": "docker compose up -d",
+    "db:migrate:dev": "pnpm --filter @rd/api prisma:migrate:dev"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "@swc/core", "argon2", "esbuild", "prisma"],
+    "overrides": { "fastify": "5.12.5" }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.0"
+  }
+}

@@ -1,0 +1,165 @@
+@use '../styles/tokens' as t;
+
+.header {
+  background: var(--c-card);
+  border-bottom: 1px solid var(--c-border);
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--c-text); }
+.brandMark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--c-brand);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.headerRight { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.who { display: none; font-size: 13px; line-height: 1.25; text-align: right; }
+.whoName { font-weight: 600; }
+.whoMail { color: var(--c-text-muted); font-size: 12px; }
+
+.content { padding: 14px 14px calc(76px + env(safe-area-inset-bottom, 0px)); min-width: 0; }
+
+// ─── Bottom nav (mobile) ────────────────────────────────────────────────────
+.bnav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: t.$max-width;
+  background: var(--c-card);
+  border-top: 1px solid var(--c-border);
+  display: flex;
+  padding: 4px 0 env(safe-area-inset-bottom, 0px);
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.bnavItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  min-height: 44px;
+  color: var(--c-text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  position: relative;
+
+  &:hover { color: var(--c-primary); }
+  &.active { color: var(--c-primary); }
+  &.active::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: var(--c-primary);
+    border-radius: 0 0 var(--radius-pill) var(--radius-pill);
+  }
+}
+
+// ─── Sidebar (desktop) ──────────────────────────────────────────────────────
+.sidebar { display: none; }
+.sideNav { display: flex; flex-direction: column; gap: 2px; flex: 1; min-height: 0; overflow-y: auto; }
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 9px 12px;
+  border-radius: var(--radius-input);
+  color: var(--c-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 150ms ease-out, color 150ms ease-out;
+  &:hover { background: var(--c-hover-surface); color: var(--c-primary); }
+  &.active { background: var(--c-primary-soft); color: var(--c-primary); }
+  @include t.focus-ring;
+}
+
+.sideFoot { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--c-border); padding-top: 10px; margin-top: 10px; }
+.account { display: flex; align-items: center; gap: 10px; padding: 8px 12px; min-width: 0; }
+.accountInfo { min-width: 0; }
+.accountName { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.accountRole { font-size: 11px; font-weight: 600; color: var(--c-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sair {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 9px 12px;
+  border-radius: var(--radius-input);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: var(--c-destructive);
+  font-size: 14px;
+  font-weight: 600;
+  &:hover { background: color-mix(in srgb, var(--c-destructive) 8%, transparent); }
+  @include t.focus-ring;
+}
+
+@media (min-width: t.$bp-md) {
+  .shell {
+    display: grid;
+    grid-template-columns: t.$sidebar-w minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+  }
+  .header { grid-column: 1 / -1; }
+  .who { display: block; }
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1;
+    grid-row: 2;
+    border-right: 1px solid var(--c-border);
+    background: var(--c-card);
+  }
+  // A coluna ocupa toda a altura da página; só o conteúdo acompanha a rolagem.
+  .sideInner {
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+    display: flex;
+    flex-direction: column;
+    padding: 12px 10px;
+  }
+  .content {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    max-width: t.$content-max-ultrawide;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  .bnav { display: none; }
+}
